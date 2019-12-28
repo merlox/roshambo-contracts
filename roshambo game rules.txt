@@ -1,0 +1,16 @@
+Deploy first:
+
+Which contract and what function do you use to create rock, paper, scissor card tokens?
+League.sol with addLeague(rockNº, scissorNº, paperNº, starsNº)
+
+Get the cards in the league by using getLeagueInfoById(leagueId) the leagueId is the array index of leagues.
+
+Get the leagues data with leagues()
+
+- Currently making the Game contract deployable by adding the required functions.
+
+Each league has a card limit for each type. I.e: 20 rocks, 40 papers, 50 scissors
+
+Those tokens are not created when the league starts. Tokens are created when people buy cards. Meaning you can buy as much as the league allows without exceeding the limit.
+
+When you buy cards, you specify the number like 29 and you pay the right price. The types are random, they rotate so you can't buy a specific type of card.
