@@ -3,7 +3,12 @@ import { render } from 'react-dom'
 import TronWeb from 'tronweb'
 
 const myAddress = "TNiVeT2TUDaKX1cjH6ejsj79aR2m1FUwJ8"
-const contractAddress = "TYjh676f8ede7cJ7ZhW2AhXmdk2G6bLvue"
+const contractAddress = "TWFE5dzwT1PkNfMWhJGWNDC1YsqGVibuj6"
+
+const rockAddress = "TVhUVnqndNEK1dZwVLKYFW9QBunn9PH1N2"
+const scissorAddress = "TFvXeAioWKiqfuKBStRy9eoCPs7swiA1Wf"
+const paperAddress = "TF5fvxHpp6NXfVPdR7Wcx1iZ6arTJ9cxpj"
+const starAddress = "TJwTrXpd9edoXJwb5hWtim2sJoZHsp8EEW"
 
 window.tronWeb = new TronWeb({
   fullNode: 'https://api.shasta.trongrid.io',
@@ -65,8 +70,21 @@ function App (props) {
     setContract(con)
   }
 
+  const tryMint = async () => {
+    const paperContract = await tronWeb.contract().at(paperAddress)
+    await paperContract.mint(myAddress).send()
+    const map = await paperContract.getAllUserTokens(myAddress).call()
+  }
+
+  const tryBurn = async () => {
+    const paperContract = await tronWeb.contract().at(paperAddress)
+    await paperContract.burn(2).send()
+    const map = await paperContract.getAllUserTokens(myAddress).call()
+  }
+
   useEffect(() => {
     initContract()
+    tryBurn()
   }, [])
 
   return (
