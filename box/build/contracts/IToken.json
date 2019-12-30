@@ -1,76 +1,51 @@
 {
-  "contractName": "AdminRole",
+  "contractName": "IToken",
   "abi": [
     {
-      "inputs": [],
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "mint",
+      "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "constructor"
+      "type": "function"
     },
     {
-      "anonymous": false,
+      "constant": false,
       "inputs": [
         {
-          "indexed": true,
-          "name": "aaccount",
-          "type": "address"
+          "name": "tokenId",
+          "type": "uint256"
         }
       ],
-      "name": "AdminAdded",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "AdminRemoved",
-      "type": "event"
+      "name": "burn",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "constant": true,
       "inputs": [
         {
-          "name": "account",
+          "name": "_user",
           "type": "address"
         }
       ],
-      "name": "isAdmin",
+      "name": "getAllUserTokens",
       "outputs": [
         {
           "name": "",
-          "type": "bool"
+          "type": "uint256[]"
         }
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "addAdmin",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [],
-      "name": "renounceAdmin",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
       "type": "function"
     }
   ],
@@ -78150,5 +78125,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2019-12-29T21:24:52.101Z"
+  "updatedAt": "2019-12-29T21:24:52.383Z"
 }

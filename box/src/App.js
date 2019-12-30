@@ -3,12 +3,9 @@ import { render } from 'react-dom'
 import TronWeb from 'tronweb'
 
 const myAddress = "TNiVeT2TUDaKX1cjH6ejsj79aR2m1FUwJ8"
-const contractAddress = "TWFE5dzwT1PkNfMWhJGWNDC1YsqGVibuj6"
 
-const rockAddress = "TVhUVnqndNEK1dZwVLKYFW9QBunn9PH1N2"
-const scissorAddress = "TFvXeAioWKiqfuKBStRy9eoCPs7swiA1Wf"
-const paperAddress = "TF5fvxHpp6NXfVPdR7Wcx1iZ6arTJ9cxpj"
-const starAddress = "TJwTrXpd9edoXJwb5hWtim2sJoZHsp8EEW"
+const gameAddress = GAME_CONTRACT
+const rockAddress = "THBg5Z1WyTYhTgdWNah94eafrr7bVe7gCi"
 
 window.tronWeb = new TronWeb({
   fullNode: 'https://api.shasta.trongrid.io',
@@ -31,6 +28,8 @@ function App (props) {
   const [leagueId, setLeagueId] = useState(null)
   const [leagueData, setLeagueData] = useState(null)
   const [error, setError] = useState(null)
+  const [cardsToBuy, setCardsToBuy] = useState(null)
+  const [toBuyRocks, setToBuyRocks] = useState(null)
 
   const deployLeague = async () => {
     setError(null)
@@ -54,7 +53,7 @@ function App (props) {
     try {
       l = await contract.getLeagueInfoById(leagueId).call()
     } catch (e) {
-      setError("No league data found for that index")
+      return setError("No league data found for that index")
     }
 
     setLeagueData({
@@ -62,29 +61,64 @@ function App (props) {
       scissors: parseInt(l[1]._hex),
       papers: parseInt(l[2]._hex),
       stars: parseInt(l[3]._hex),
+      currentRocks: parseInt(l[4]._hex),
+      currentPapers: parseInt(l[5]._hex),
+      currentScissors: parseInt(l[6]._hex),
     })
   }
 
   const initContract = async () => {
-    const con = await tronWeb.contract().at(contractAddress)
+    const con = await tronWeb.contract().at(gameAddress)
     setContract(con)
   }
 
   const tryMint = async () => {
-    const paperContract = await tronWeb.contract().at(paperAddress)
-    await paperContract.mint(myAddress).send()
-    const map = await paperContract.getAllUserTokens(myAddress).call()
+    const rockCon = await tronWeb.contract().at(rockAddress)
+    // Only the contract creator and Game.sol can mint new tokens by using the buy function
+    await rockCon.mint(myAddress).send()
+    const map = await rockCon.getAllUserTokens(myAddress).call()
   }
 
   const tryBurn = async () => {
-    const paperContract = await tronWeb.contract().at(paperAddress)
-    await paperContract.burn(2).send()
-    const map = await paperContract.getAllUserTokens(myAddress).call()
+    const rockCon = await tronWeb.contract().at(rockAddress)
+    await rockCon.burn(2).send()
+    const map = await rockCon.getAllUserTokens(myAddress).call()
+  }
+
+  const buyCards = async () => {
+    // Each card is 10 trx
+    const cost = tronWeb.toSun(10) * cardsToBuy
+    console.log("Buying cards... cost is:", cost)
+    try {
+      await contract.buyCards(cardsToBuy).send({
+        callValue: cost
+      })
+    } catch (e) {
+      return console.log("Error", e)
+    }
+    console.log("Cards purchased successfully!")
+  }
+
+  const buyRocks = async () => {
+    const cost = tronWeb.toSun(10) * toBuyRocks
+    console.log("Buying cards... cost is:", cost)
+    try {
+      const res = await contract.buyRocks(toBuyRocks).send({
+        callValue: cost
+      })
+      console.log('Response', res)
+    } catch (e) {
+      return console.log("Error", e)
+    }
+    console.log("Rocks purchased successfully!")
+    const rockContract = await tronWeb.contract().at(rockAddress)
+    const map = await rockContract.getAllUserTokens(myAddress).call()
+    console.log("My tokens", map)
+    console.log('Is game contract a valid minter?', await rockContract.isMinter(gameAddress).call())
   }
 
   useEffect(() => {
     initContract()
-    tryBurn()
   }, [])
 
   return (
@@ -110,25 +144,39 @@ function App (props) {
         }}/>
         <button type="submit">Deploy new league</button>
       </form>
-
       <hr/>
-
       <h2>Get league</h2>
       <input type="number" placeholder="League ID..." onChange={e => {
         setLeagueId(e.target.value)
       }}/>
-
       {!leagueData ? null : (
         <div>
           <p>Rocks: {leagueData.rocks}</p>
           <p>Papers: {leagueData.papers}</p>
           <p>Scissors: {leagueData.scissors}</p>
           <p>Stars: {leagueData.stars}</p>
+          <p>Current rocks: {leagueData.currentRocks}</p>
+          <p>Current papers: {leagueData.currentPapers}</p>
+          <p>Current scissors: {leagueData.currentScissors}</p>
         </div>
       )}
       <button type="button" onClick={() => {
         getLeague()
-      }}>Get league</button>
+      }}>Get League</button>
+      <h2>Buy cards</h2>
+      <input type="number" placeholder="How many..." onChange={e => {
+        setCardsToBuy(e.target.value)
+      }}/>
+      <button type="button" onClick={() => {
+        buyCards()
+      }}>Buy Cards</button>
+      <h2>Buy rocks</h2>
+      <input type="number" placeholder="How many..." onChange={e => {
+        setToBuyRocks(e.target.value)
+      }}/>
+      <button type="button" onClick={() => {
+        buyRocks()
+      }}>Buy Rocks</button>
     </div>
   )
 }
