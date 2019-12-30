@@ -3,9 +3,7 @@ import { render } from 'react-dom'
 import TronWeb from 'tronweb'
 
 const myAddress = "TNiVeT2TUDaKX1cjH6ejsj79aR2m1FUwJ8"
-
 const gameAddress = GAME_CONTRACT
-const rockAddress = "THBg5Z1WyTYhTgdWNah94eafrr7bVe7gCi"
 
 window.tronWeb = new TronWeb({
   fullNode: 'https://api.shasta.trongrid.io',
@@ -72,19 +70,6 @@ function App (props) {
     setContract(con)
   }
 
-  const tryMint = async () => {
-    const rockCon = await tronWeb.contract().at(rockAddress)
-    // Only the contract creator and Game.sol can mint new tokens by using the buy function
-    await rockCon.mint(myAddress).send()
-    const map = await rockCon.getAllUserTokens(myAddress).call()
-  }
-
-  const tryBurn = async () => {
-    const rockCon = await tronWeb.contract().at(rockAddress)
-    await rockCon.burn(2).send()
-    const map = await rockCon.getAllUserTokens(myAddress).call()
-  }
-
   const buyCards = async () => {
     // Each card is 10 trx
     const cost = tronWeb.toSun(10) * cardsToBuy
@@ -97,24 +82,6 @@ function App (props) {
       return console.log("Error", e)
     }
     console.log("Cards purchased successfully!")
-  }
-
-  const buyRocks = async () => {
-    const cost = tronWeb.toSun(10) * toBuyRocks
-    console.log("Buying cards... cost is:", cost)
-    try {
-      const res = await contract.buyRocks(toBuyRocks).send({
-        callValue: cost
-      })
-      console.log('Response', res)
-    } catch (e) {
-      return console.log("Error", e)
-    }
-    console.log("Rocks purchased successfully!")
-    const rockContract = await tronWeb.contract().at(rockAddress)
-    const map = await rockContract.getAllUserTokens(myAddress).call()
-    console.log("My tokens", map)
-    console.log('Is game contract a valid minter?', await rockContract.isMinter(gameAddress).call())
   }
 
   useEffect(() => {

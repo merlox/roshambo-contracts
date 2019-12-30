@@ -1284,20 +1284,16 @@ contract Game is AdminRole {
     require(currentLeague.currentRocksAvailable < currentLeague.maxNumberOfRocks, "No rocks available for purchase in this league anymore");
 
     for (uint256 i = 0; i < _cardsToBuy; i++) {
-      emit Msg("a");
       rockToken.mint(msg.sender);
-      emit Msg("b");
-      leagues[leagues.length - 1].currentRocksAvailable += 1;
-      emit Msg("c");
+      leagues[leagues.length - 1].currentRocksAvailable++;
     }
-    emit Msg("d");
   }
 
   function buyPapers(uint256 _cardsToBuy) public payable {
     require(msg.value >= _cardsToBuy * cardPrice, "You must send the right price price for the amount of cards you want to buy");
     require(leagues.length > 0, "There are no leagues available right now");
     LeagueInfo memory currentLeague = leagues[leagues.length - 1];
-    require(currentLeague.currentPapersAvailable >= currentLeague.maxNumberOfPapers, "No papers available for purchase in this league anymore");
+    require(currentLeague.currentPapersAvailable < currentLeague.maxNumberOfPapers, "No papers available for purchase in this league anymore");
 
     for (uint256 i = 0; i < _cardsToBuy; i++) {
       paperToken.mint(msg.sender);
@@ -1309,7 +1305,7 @@ contract Game is AdminRole {
     require(msg.value >= _cardsToBuy * cardPrice, "You must send the right price price for the amount of cards you want to buy");
     require(leagues.length > 0, "There are no leagues available right now");
     LeagueInfo memory currentLeague = leagues[leagues.length - 1];
-    require(currentLeague.currentScissorsAvailable >= currentLeague.maxNumberOfScissors, "No scissors available for purchase in this league anymore");
+    require(currentLeague.currentScissorsAvailable < currentLeague.maxNumberOfScissors, "No scissors available for purchase in this league anymore");
 
     for (uint256 i = 0; i < _cardsToBuy; i++) {
       scissorToken.mint(msg.sender);
@@ -1325,40 +1321,61 @@ contract Game is AdminRole {
     require(leagues.length > 0, "There are no leagues available right now");
     require(getAvailableTokensForPurchase() > 0, "There are no tokens available for purchase on this league anymore");
 
-    LeagueInfo memory currentLeague = leagues[leagues.length - 1];
     uint8 lastId = 0;
-    uint256 generatedRocks = 0;
-    uint256 generatedPapers = 0;
-    uint256 generatedScissors = 0;
-
     // Mint the required tokens for each type alternating
     for (uint256 i = 0; i < _cardsToBuy; i++) {
       if (lastId == 0) {
-        // Generate rocks
-        if (currentLeague.currentRocksAvailable + generatedRocks < currentLeague.maxNumberOfRocks) {
-          rockToken.mint(msg.sender);
-          generatedRocks++;
-          leagues[leagues.length - 1].currentRocksAvailable++;
+        if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
+          mintRocks();
+        } else if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
+          mintPapers();
+        } else if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
+          mintScissors();
+        } else {
+          // No more cards available anymore
+          break;
         }
       } else if (lastId == 1) {
-        // Generate papers
-        if (currentLeague.currentPapersAvailable + generatedPapers < currentLeague.maxNumberOfPapers) {
-          paperToken.mint(msg.sender);
-          generatedPapers++;
-          leagues[leagues.length - 1].currentPapersAvailable++;
+        if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
+          mintPapers();
+        } else if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
+          mintRocks();
+        } else if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
+          mintScissors();
+        } else {
+          // No more cards available anymore
+          break;
         }
       } else {
-        // Generate scissors
-        if (currentLeague.currentScissorsAvailable + generatedScissors < currentLeague.maxNumberOfScissors) {
-          scissorToken.mint(msg.sender);
-          generatedScissors++;
-          leagues[leagues.length - 1].currentScissorsAvailable++;
+        if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
+          mintScissors();
+        } else if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
+          mintPapers();
+        } else if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
+          mintRocks();
+        } else {
+          // No more cards available anymore
+          break;
         }
       }
-
       if (lastId == 2) lastId = 0;
       else lastId++;
     }
+  }
+
+  function mintRocks() internal {
+    rockToken.mint(msg.sender);
+    leagues[leagues.length - 1].currentRocksAvailable++;
+  }
+
+  function mintPapers() internal {
+    paperToken.mint(msg.sender);
+    leagues[leagues.length - 1].currentPapersAvailable++;
+  }
+
+  function mintScissors() internal {
+    scissorToken.mint(msg.sender);
+    leagues[leagues.length - 1].currentScissorsAvailable++;
   }
 
   function extractFunds() public {
