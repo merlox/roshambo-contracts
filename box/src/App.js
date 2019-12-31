@@ -11,7 +11,6 @@ window.tronWeb = new TronWeb({
   eventServer: 'https://api.shasta.trongrid.io',
   privateKey: PRIVATE_KEY_SHASTA,
 })
-
 window.tronWeb.defaultAddress = {
   hex: window.tronWeb.address.toHex(myAddress),
   base58: myAddress
@@ -27,7 +26,6 @@ function App (props) {
   const [leagueData, setLeagueData] = useState(null)
   const [error, setError] = useState(null)
   const [cardsToBuy, setCardsToBuy] = useState(null)
-  const [toBuyRocks, setToBuyRocks] = useState(null)
 
   const deployLeague = async () => {
     setError(null)
@@ -53,7 +51,6 @@ function App (props) {
     } catch (e) {
       return setError("No league data found for that index")
     }
-
     setLeagueData({
       rocks: parseInt(l[0]._hex),
       scissors: parseInt(l[1]._hex),
@@ -137,13 +134,6 @@ function App (props) {
       <button type="button" onClick={() => {
         buyCards()
       }}>Buy Cards</button>
-      <h2>Buy rocks</h2>
-      <input type="number" placeholder="How many..." onChange={e => {
-        setToBuyRocks(e.target.value)
-      }}/>
-      <button type="button" onClick={() => {
-        buyRocks()
-      }}>Buy Rocks</button>
     </div>
   )
 }

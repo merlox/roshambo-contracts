@@ -317,6 +317,14 @@ contract Game is AdminRole {
     }
   }
 
+  // Returns the array of owned card for each type
+  function getMyCards() public view returns(uint256[] memory, uint256[] memory, uint256[] memory) {
+    uint256[] memory rocks = rockToken.getAllUserTokens(msg.sender);
+    uint256[] memory papers = paperToken.getAllUserTokens(msg.sender);
+    uint256[] memory scissors = scissorToken.getAllUserTokens(msg.sender);
+    return (rocks, papers, scissors);
+  }
+
   function mintRocks() internal {
     rockToken.mint(msg.sender);
     leagues[leagues.length - 1].currentRocksAvailable++;
@@ -330,6 +338,35 @@ contract Game is AdminRole {
   function mintScissors() internal {
     scissorToken.mint(msg.sender);
     leagues[leagues.length - 1].currentScissorsAvailable++;
+  }
+
+  function deleteCard(address _user, string _cardType) public onlyAdmin returns (bool) {
+    if (_cardType == "Rock") {
+      uint256[] memory userRocks = rockToken.getAllUserTokens();
+      if (userRocks.length > 0) {
+        rockToken.burn(userRocks[0]);
+        return true;
+      } else {
+        return false;
+      }
+    } else if (_cardType == "Paper") {
+      uint256[] memory userPapers = paperToken.getAllUserTokens();
+      if (userPapers.lenth > 0) {
+        paperToken.burn(userPapers[0]);
+        return true;
+      } else {
+        return false;
+      }
+    } else if (_cardType == "Scissors") {
+      uint256[] memory userScissors = scissorToken.getAllUserTokens();
+      if (userScissors.length > 0) {
+        userScissors.burn(userScissors[0]);
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
   }
 
   function extractFunds() public {

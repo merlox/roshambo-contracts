@@ -1280,8 +1280,7 @@ contract Game is AdminRole {
   function buyRocks(uint256 _cardsToBuy) public payable {
     require(msg.value >= _cardsToBuy * cardPrice, "You must send the right price price for the amount of cards you want to buy");
     require(leagues.length > 0, "There are no leagues available right now");
-    LeagueInfo memory currentLeague = leagues[leagues.length - 1];
-    require(currentLeague.currentRocksAvailable < currentLeague.maxNumberOfRocks, "No rocks available for purchase in this league anymore");
+    require(leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks, "No rocks available for purchase in this league anymore");
 
     for (uint256 i = 0; i < _cardsToBuy; i++) {
       rockToken.mint(msg.sender);
@@ -1292,8 +1291,7 @@ contract Game is AdminRole {
   function buyPapers(uint256 _cardsToBuy) public payable {
     require(msg.value >= _cardsToBuy * cardPrice, "You must send the right price price for the amount of cards you want to buy");
     require(leagues.length > 0, "There are no leagues available right now");
-    LeagueInfo memory currentLeague = leagues[leagues.length - 1];
-    require(currentLeague.currentPapersAvailable < currentLeague.maxNumberOfPapers, "No papers available for purchase in this league anymore");
+    require(leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers, "No papers available for purchase in this league anymore");
 
     for (uint256 i = 0; i < _cardsToBuy; i++) {
       paperToken.mint(msg.sender);
@@ -1304,8 +1302,7 @@ contract Game is AdminRole {
   function buyScissors(uint256 _cardsToBuy) public payable {
     require(msg.value >= _cardsToBuy * cardPrice, "You must send the right price price for the amount of cards you want to buy");
     require(leagues.length > 0, "There are no leagues available right now");
-    LeagueInfo memory currentLeague = leagues[leagues.length - 1];
-    require(currentLeague.currentScissorsAvailable < currentLeague.maxNumberOfScissors, "No scissors available for purchase in this league anymore");
+    require(leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors, "No scissors available for purchase in this league anymore");
 
     for (uint256 i = 0; i < _cardsToBuy; i++) {
       scissorToken.mint(msg.sender);
@@ -1361,6 +1358,14 @@ contract Game is AdminRole {
       if (lastId == 2) lastId = 0;
       else lastId++;
     }
+  }
+
+  // Returns the array of owned card for each type
+  function getMyCards() public view returns(uint256[] memory, uint256[] memory, uint256[] memory) {
+    uint256[] memory rocks = rockToken.getAllUserTokens(msg.sender);
+    uint256[] memory papers = paperToken.getAllUserTokens(msg.sender);
+    uint256[] memory scissors = scissorToken.getAllUserTokens(msg.sender);
+    return (rocks, papers, scissors);
   }
 
   function mintRocks() internal {
