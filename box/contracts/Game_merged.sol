@@ -1383,6 +1383,35 @@ contract Game is AdminRole {
     leagues[leagues.length - 1].currentScissorsAvailable++;
   }
 
+  function deleteCard(address _user, string memory _cardType) public onlyAdmin returns (bool) {
+    if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Rock"))) {
+      uint256[] memory userRocks = rockToken.getAllUserTokens(_user);
+      if (userRocks.length > 0) {
+        rockToken.burn(userRocks[0]);
+        return true;
+      } else {
+        return false;
+      }
+    } else if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Paper"))) {
+      uint256[] memory userPapers = paperToken.getAllUserTokens(_user);
+      if (userPapers.length > 0) {
+        paperToken.burn(userPapers[0]);
+        return true;
+      } else {
+        return false;
+      }
+    } else if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Scissors"))) {
+      uint256[] memory userScissors = scissorToken.getAllUserTokens(_user);
+      if (userScissors.length > 0) {
+        scissorToken.burn(userScissors[0]);
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
   function extractFunds() public {
     require(msg.sender == owner);
     owner.transfer(address(this).balance);
