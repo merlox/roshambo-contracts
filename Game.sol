@@ -275,43 +275,62 @@ contract Game is AdminRole {
     require(leagues.length > 0, "There are no leagues available right now");
     require(getAvailableTokensForPurchase() > 0, "There are no tokens available for purchase on this league anymore");
 
+    emit Msg("1");
+
     uint8 lastId = 0;
     // Mint the required tokens for each type alternating
     for (uint256 i = 0; i < _cardsToBuy; i++) {
+      emit Msg("2");
       if (lastId == 0) {
+        emit Msg("3");
         if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
           mintRocks();
+          emit Msg("4");
         } else if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
           mintPapers();
+          emit Msg("5");
         } else if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
           mintScissors();
+          emit Msg("6");
         } else {
+          emit Msg("7");
           // No more cards available anymore
           break;
         }
       } else if (lastId == 1) {
+        emit Msg("8");
         if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
           mintPapers();
+          emit Msg("9");
         } else if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
           mintRocks();
+          emit Msg("10");
         } else if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
           mintScissors();
+          emit Msg("11");
         } else {
           // No more cards available anymore
+          emit Msg("12");
           break;
         }
       } else {
+        emit Msg("13");
         if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
           mintScissors();
+          emit Msg("14");
         } else if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
           mintPapers();
+          emit Msg("15");
         } else if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
           mintRocks();
+          emit Msg("16");
         } else {
           // No more cards available anymore
+          emit Msg("17");
           break;
         }
       }
+      emit Msg("18");
       if (lastId == 2) lastId = 0;
       else lastId++;
     }
