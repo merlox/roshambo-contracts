@@ -5,7 +5,7 @@
   "main": "tronbox-config.js",
   "scripts": {
     "watch": "NODE_ENV=development webpack -w",
-    "server": "NODE_ENV=development node server.js"
+    "server": "NODE_ENV=development webpack && NODE_ENV=development node server.js"
   },
   "author": "Merunas Grincalaitis",
   "license": "MIT",

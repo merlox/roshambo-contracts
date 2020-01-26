@@ -3,6 +3,7 @@ import { render } from 'react-dom'
 import TronWeb from 'tronweb'
 
 const myAddress = "TNiVeT2TUDaKX1cjH6ejsj79aR2m1FUwJ8"
+console.log('Game contract', GAME_CONTRACT)
 const gameAddress = GAME_CONTRACT
 
 window.tronWeb = new TronWeb({
