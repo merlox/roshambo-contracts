@@ -1218,6 +1218,9 @@ contract Game is AdminRole {
       uint256 currentPapersAvailable;
       uint256 currentScissorsAvailable;
       uint256 currentStarsAvailable;
+      uint256 rocksUsed; // The maximum minus the deleted ones after placing
+      uint256 papersUsed;
+      uint256 scissorsUsed;
   }
   //LeagueId => LeagueInfo
   LeagueInfo[] public leagues;
@@ -1247,6 +1250,9 @@ contract Game is AdminRole {
     leagueInfo.maxNumberOfScissors = _numberOfScissors;
     leagueInfo.maxNumberOfPapers = _numberOfPapers;
     leagueInfo.maxNumberOfStars = _numberOfStars;
+    leagueInfo.rocksUsed = _numberOfRocks;
+    leagueInfo.scissorsUsed = _numberOfScissors;
+    leagueInfo.papersUsed = _numberOfPapers;
     leagues.push(leagueInfo);
   }
 
@@ -1259,6 +1265,17 @@ contract Game is AdminRole {
       leagues[_leagueId].currentRocksAvailable,
       leagues[_leagueId].currentPapersAvailable,
       leagues[_leagueId].currentScissorsAvailable);
+  }
+
+  // Gives the cards available in the league after usage to show in the gameplay
+  function getRemainingCardsInLeague() public view returns (uint256, uint256, uint256) {
+    require(leagues.length > 0, "There are no leagues available right now");
+    LeagueInfo memory currentLeague = leagues[leagues.length - 1];
+    return (
+      currentLeague.rocksUsed,
+      currentLeague.papersUsed,
+      currentLeague.scissorsUsed
+    );
   }
 
   // Returns the in use papers, rocks and scissors or throws if no league exists
@@ -1317,63 +1334,43 @@ contract Game is AdminRole {
     require(msg.value >= _cardsToBuy * cardPrice, "You must send the right price price for the amount of cards you want to buy");
     require(leagues.length > 0, "There are no leagues available right now");
     require(getAvailableTokensForPurchase() > 0, "There are no tokens available for purchase on this league anymore");
-
-    emit Msg("1");
-
     uint8 lastId = 0;
     // Mint the required tokens for each type alternating
     for (uint256 i = 0; i < _cardsToBuy; i++) {
-      emit Msg("2");
       if (lastId == 0) {
-        emit Msg("3");
         if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
           mintRocks();
-          emit Msg("4");
         } else if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
           mintPapers();
-          emit Msg("5");
         } else if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
           mintScissors();
-          emit Msg("6");
         } else {
-          emit Msg("7");
           // No more cards available anymore
           break;
         }
       } else if (lastId == 1) {
-        emit Msg("8");
         if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
           mintPapers();
-          emit Msg("9");
         } else if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
           mintRocks();
-          emit Msg("10");
         } else if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
           mintScissors();
-          emit Msg("11");
         } else {
           // No more cards available anymore
-          emit Msg("12");
           break;
         }
       } else {
-        emit Msg("13");
         if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
           mintScissors();
-          emit Msg("14");
         } else if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
           mintPapers();
-          emit Msg("15");
         } else if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
           mintRocks();
-          emit Msg("16");
         } else {
           // No more cards available anymore
-          emit Msg("17");
           break;
         }
       }
-      emit Msg("18");
       if (lastId == 2) lastId = 0;
       else lastId++;
     }
@@ -1402,33 +1399,29 @@ contract Game is AdminRole {
     leagues[leagues.length - 1].currentScissorsAvailable++;
   }
 
-  function deleteCard(address _user, string memory _cardType) public onlyAdmin returns (bool) {
-    if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Rock"))) {
-      uint256[] memory userRocks = rockToken.getAllUserTokens(_user);
-      if (userRocks.length > 0) {
-        rockToken.burn(userRocks[0]);
-        return true;
-      } else {
-        return false;
-      }
-    } else if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Paper"))) {
-      uint256[] memory userPapers = paperToken.getAllUserTokens(_user);
-      if (userPapers.length > 0) {
-        paperToken.burn(userPapers[0]);
-        return true;
-      } else {
-        return false;
-      }
-    } else if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Scissors"))) {
-      uint256[] memory userScissors = scissorToken.getAllUserTokens(_user);
-      if (userScissors.length > 0) {
-        scissorToken.burn(userScissors[0]);
-        return true;
-      } else {
-        return false;
-      }
+  function deleteCard(string memory _cardType) public {
+    uint256[] memory userRocks;
+    uint256[] memory userPapers;
+    uint256[] memory userScissors;
+    (userRocks, userPapers, userScissors) = getMyCards();
+    LeagueInfo memory currentLeague = leagues[leagues.length - 1];
+    require(currentLeague.rocksUsed > 0
+      && currentLeague.papersUsed > 0
+      && currentLeague.scissorsUsed > 0, "No cards available for deletion");
+
+    if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Rock"))
+      && userRocks.length > 0) {
+      rockToken.burn(userRocks[0]);
+      leagues[leagues.length - 1].rocksUsed -= 1;
+    } else if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Paper"))
+      && userPapers.length > 0) {
+      paperToken.burn(userPapers[0]);
+      leagues[leagues.length - 1].papersUsed -= 1;
+    } else if (keccak256(abi.encode(_cardType)) == keccak256(abi.encode("Scissors"))
+      && userScissors.length > 0) {
+      scissorToken.burn(userScissors[0]);
+      leagues[leagues.length - 1].scissorsUsed -= 1;
     }
-    return true;
   }
 
   function extractFunds() public {
