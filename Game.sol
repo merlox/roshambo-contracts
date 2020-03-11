@@ -288,12 +288,17 @@ contract Game is AdminRole {
   // set the quantity to 20, you must send 200 TRX or more
   // if you send more than the quantity, you lost that amount
   function buyCards(uint256 _cardsToBuy) public payable {
+    emit Msg('1');
     require(msg.value >= _cardsToBuy * cardPrice, "You must send the right price price for the amount of cards you want to buy");
+    emit Msg('2');
     require(leagues.length > 0, "There are no leagues available right now");
+    emit Msg('3');
     require(getAvailableTokensForPurchase() > 0, "There are no tokens available for purchase on this league anymore");
+    emit Msg('4');
     uint8 lastId = 0;
     // Mint the required tokens for each type alternating
     for (uint256 i = 0; i < _cardsToBuy; i++) {
+      emit Msg('5');
       if (lastId == 0) {
         if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
           mintRocks();
@@ -306,6 +311,7 @@ contract Game is AdminRole {
           break;
         }
       } else if (lastId == 1) {
+        emit Msg('6');
         if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
           mintPapers();
         } else if (leagues[leagues.length - 1].currentRocksAvailable < leagues[leagues.length - 1].maxNumberOfRocks) {
@@ -317,6 +323,7 @@ contract Game is AdminRole {
           break;
         }
       } else {
+        emit Msg('7');
         if (leagues[leagues.length - 1].currentScissorsAvailable < leagues[leagues.length - 1].maxNumberOfScissors) {
           mintScissors();
         } else if (leagues[leagues.length - 1].currentPapersAvailable < leagues[leagues.length - 1].maxNumberOfPapers) {
@@ -328,6 +335,7 @@ contract Game is AdminRole {
           break;
         }
       }
+      emit Msg('8');
       if (lastId == 2) lastId = 0;
       else lastId++;
     }

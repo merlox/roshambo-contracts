@@ -7,9 +7,9 @@ console.log('Game contract', GAME_CONTRACT)
 const gameAddress = GAME_CONTRACT
 
 window.tronWeb = new TronWeb({
-  fullNode: 'https://api.shasta.trongrid.io',
-  solidityNode: 'https://api.shasta.trongrid.io',
-  eventServer: 'https://api.shasta.trongrid.io',
+  fullNode: 'https://eventtest.nileex.io/wallet',
+  solidityNode: 'https://eventtest.nileex.io/walletsolidity',
+  eventServer: 'https://eventtest.nileex.io',
   privateKey: PRIVATE_KEY_SHASTA,
 })
 window.tronWeb.defaultAddress = {
