@@ -61,6 +61,7 @@ module.exports = {
     // }),
     new webpack.DefinePlugin({
       PRIVATE_KEY_SHASTA: JSON.stringify(process.env.PRIVATE_KEY_SHASTA),
+      PRIVATE_KEY_NILE: JSON.stringify(process.env.PRIVATE_KEY_NILE),
       GAME_CONTRACT: JSON.stringify(process.env.GAME_CONTRACT),
     })
   ]

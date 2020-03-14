@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { render } from 'react-dom'
 import TronWeb from 'tronweb'
 
-const myAddress = "TNiVeT2TUDaKX1cjH6ejsj79aR2m1FUwJ8"
+const myAddress = "TEUsDTUwML38AKxBfenEMQYog5Xd6a6aAD"
 console.log('Game contract', GAME_CONTRACT)
 const gameAddress = GAME_CONTRACT
 
 window.tronWeb = new TronWeb({
-  fullNode: 'https://eventtest.nileex.io/wallet',
-  solidityNode: 'https://eventtest.nileex.io/walletsolidity',
-  eventServer: 'https://eventtest.nileex.io',
-  privateKey: PRIVATE_KEY_SHASTA,
+  fullNode: 'https://api.shasta.trongrid.io',
+  solidityNode: 'https://api.shasta.trongrid.io',
+  eventServer: 'https://api.shasta.trongrid.io',
+  privateKey: PRIVATE_KEY_NILE,
 })
 window.tronWeb.defaultAddress = {
   hex: window.tronWeb.address.toHex(myAddress),
