@@ -2,19 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { render } from 'react-dom'
 import TronWeb from 'tronweb'
 
-const myAddress = "TEUsDTUwML38AKxBfenEMQYog5Xd6a6aAD"
-console.log('Game contract', GAME_CONTRACT)
-const gameAddress = GAME_CONTRACT
-
 window.tronWeb = new TronWeb({
-  fullNode: 'https://api.shasta.trongrid.io',
-  solidityNode: 'https://api.shasta.trongrid.io',
-  eventServer: 'https://api.shasta.trongrid.io',
-  privateKey: PRIVATE_KEY_NILE,
+  fullNode: 'https://api.trongrid.io',
+  solidityNode: 'https://api.trongrid.io',
+  eventServer: 'https://api.trongrid.io',
+  privateKey: PRIVATE_KEY_MAINNET,
 })
 window.tronWeb.defaultAddress = {
-  hex: window.tronWeb.address.toHex(myAddress),
-  base58: myAddress
+  hex: window.tronWeb.address.toHex(TRON_ADDRESS),
+  base58: TRON_ADDRESS
 }
 
 function App (props) {
@@ -64,7 +60,7 @@ function App (props) {
   }
 
   const initContract = async () => {
-    const con = await tronWeb.contract().at(gameAddress)
+    const con = await tronWeb.contract().at(GAME_CONTRACT)
     setContract(con)
   }
 
