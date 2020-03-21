@@ -8,10 +8,10 @@ const TronWeb = require('tronweb')
 let rocks, scissors, papers, stars
 
 const tronWeb = new TronWeb({
-  fullNode: 'https://api.shasta.trongrid.io',
-  solidityNode: 'https://api.shasta.trongrid.io',
-  eventServer: 'https://api.shasta.trongrid.io',
-  privateKey: process.env.PRIVATE_KEY_SHASTA,
+  fullNode: 'https://api.trongrid.io',
+  solidityNode: 'https://api.trongrid.io',
+  eventServer: 'https://api.trongrid.io',
+  privateKey: process.env.PRIVATE_KEY_MAINNET,
 })
 
 module.exports = deployer => {

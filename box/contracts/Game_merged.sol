@@ -1052,7 +1052,7 @@ contract IToken {
   function getAllUserTokens(address _user) public view returns (uint256[] memory);
 }
 
-contract Scissors is ERC721Full, MinterRole, ERC721MetadataMintable {
+contract Scissors is IToken, ERC721Full, MinterRole, ERC721MetadataMintable {
   uint256 public counter;
   mapping(address => uint256[]) public tokensOwned;
 
@@ -1090,7 +1090,7 @@ contract Scissors is ERC721Full, MinterRole, ERC721MetadataMintable {
 }
 
 
-contract Rocks is ERC721Full, MinterRole, ERC721MetadataMintable {
+contract Rocks is IToken, ERC721Full, MinterRole, ERC721MetadataMintable {
   uint256 public counter;
   mapping(address => uint256[]) public tokensOwned;
 
@@ -1128,7 +1128,7 @@ contract Rocks is ERC721Full, MinterRole, ERC721MetadataMintable {
 }
 
 
-contract Papers is ERC721Full, MinterRole, ERC721MetadataMintable {
+contract Papers is IToken, ERC721Full, MinterRole, ERC721MetadataMintable {
   uint256 public counter;
   mapping(address => uint256[]) public tokensOwned;
 
@@ -1167,7 +1167,7 @@ contract Papers is ERC721Full, MinterRole, ERC721MetadataMintable {
 }
 
 
-contract Stars is ERC721Full, MinterRole, ERC721MetadataMintable {
+contract Stars is IToken, ERC721Full, MinterRole, ERC721MetadataMintable {
   uint256 public counter;
   mapping(address => uint256[]) public tokensOwned;
 
