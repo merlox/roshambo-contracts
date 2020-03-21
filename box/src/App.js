@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { render } from 'react-dom'
 import TronWeb from 'tronweb'
 
+console.log('Priv key mainnet', PRIVATE_KEY_MAINNET)
+
 window.tronWeb = new TronWeb({
   fullNode: 'https://api.trongrid.io',
   solidityNode: 'https://api.trongrid.io',
